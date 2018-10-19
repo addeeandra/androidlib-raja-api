@@ -1,9 +1,6 @@
 package me.inibukanadit.rajaapi.wilayah
 
-import me.inibukanadit.rajaapi.wilayah.model.Area
-import me.inibukanadit.rajaapi.wilayah.model.Kabupaten
-import me.inibukanadit.rajaapi.wilayah.model.Kecamatan
-import me.inibukanadit.rajaapi.wilayah.model.Provinsi
+import me.inibukanadit.rajaapi.wilayah.model.*
 import me.inibukanadit.rajaapi.wilayah.util.sendGetRequest
 import org.json.JSONObject
 
@@ -28,44 +25,30 @@ object WilayahApi {
     }
 
     suspend fun getProvinsi(kodeUnik: String): Result {
-        val response = sendGetRequest(buildUrl(kodeUnik, "/provinsi")).await()
-        val json = JSONObject(response)
-
-        return if (getStatusSuccess(json)) {
-            Result.Success(responseToModel<Provinsi>(json))
-        } else {
-            Result.Error(getStatusCode(json), getStatusMessage(json))
-        }
+        return getArea<Provinsi>(kodeUnik, "provinsi")
     }
 
     suspend fun getKabupaten(kodeUnik: String, provinsiId: String): Result {
-        val response = sendGetRequest(buildUrl(kodeUnik, "/kabupaten?idpropinsi=$provinsiId")).await()
-        val json = JSONObject(response)
-
-        return if (getStatusSuccess(json)) {
-            Result.Success(responseToModel<Kabupaten>(json))
-        } else {
-            Result.Error(getStatusCode(json), getStatusMessage(json))
-        }
+        return getArea<Kecamatan>(kodeUnik, "kabupaten", "idpropinsi", provinsiId)
     }
 
     suspend fun getKecamatan(kodeUnik: String, kabupatenId: String): Result {
-        val response = sendGetRequest(buildUrl(kodeUnik, "/kecamatan?idkabupaten=$kabupatenId")).await()
-        val json = JSONObject(response)
-
-        return if (getStatusSuccess(json)) {
-            Result.Success(responseToModel<Kecamatan>(json))
-        } else {
-            Result.Error(getStatusCode(json), getStatusMessage(json))
-        }
+        return getArea<Kecamatan>(kodeUnik, "kecamatan", "idkabupaten", kabupatenId)
     }
 
     suspend fun getKelurahan(kodeUnik: String, kecamatanId: String): Result {
-        val response = sendGetRequest(buildUrl(kodeUnik, "/kelurahan?idkecamatan=$kecamatanId")).await()
+        return getArea<Kelurahan>(kodeUnik, "kelurahan", "idkecamatan", kecamatanId)
+    }
+
+    suspend fun <T : Area> getArea(kodeUnik: String, areaName: String, keywordId: String? = null, id: String? = null): Result {
+        val rawUrl = "/$areaName" + if (keywordId != null) "?$keywordId=$id" else ""
+        val url = buildUrl(kodeUnik, rawUrl)
+
+        val response = sendGetRequest(url).await()
         val json = JSONObject(response)
 
         return if (getStatusSuccess(json)) {
-            Result.Success(responseToModel<Kecamatan>(json))
+            Result.Success(responseToModel<T>(json))
         } else {
             Result.Error(getStatusCode(json), getStatusMessage(json))
         }
