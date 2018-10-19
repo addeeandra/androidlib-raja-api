@@ -28,19 +28,24 @@ object WilayahApi {
         return getArea<Provinsi>(kodeUnik, "provinsi")
     }
 
-    suspend fun getKabupaten(kodeUnik: String, provinsiId: String): Result {
+    suspend fun getKabupaten(kodeUnik: String, provinsiId: Int): Result {
         return getArea<Kecamatan>(kodeUnik, "kabupaten", "idpropinsi", provinsiId)
     }
 
-    suspend fun getKecamatan(kodeUnik: String, kabupatenId: String): Result {
+    suspend fun getKecamatan(kodeUnik: String, kabupatenId: Int): Result {
         return getArea<Kecamatan>(kodeUnik, "kecamatan", "idkabupaten", kabupatenId)
     }
 
-    suspend fun getKelurahan(kodeUnik: String, kecamatanId: String): Result {
+    suspend fun getKelurahan(kodeUnik: String, kecamatanId: Int): Result {
         return getArea<Kelurahan>(kodeUnik, "kelurahan", "idkecamatan", kecamatanId)
     }
 
-    suspend fun <T : Area> getArea(kodeUnik: String, areaName: String, keywordId: String? = null, id: String? = null): Result {
+    suspend fun <T : Area> getArea(
+            kodeUnik: String,
+            areaName: String,
+            keywordId: String? = null,
+            id: Int? = null
+    ): Result {
         val rawUrl = "/$areaName" + if (keywordId != null) "?$keywordId=$id" else ""
         val url = buildUrl(kodeUnik, rawUrl)
 
