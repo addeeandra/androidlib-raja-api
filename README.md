@@ -1,6 +1,8 @@
 # Raja Api
 Note : This library are using **Kotlin Coroutines**.
 
+[![](https://jitpack.io/v/inibukanadit/raja-api.svg)](https://jitpack.io/#inibukanadit/raja-api)
+
 ## Installation
 1. Add `maven { url "https://jitpack.io" }` on your root `build.gradle`
 ```gradle
