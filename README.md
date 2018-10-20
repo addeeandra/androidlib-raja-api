@@ -31,7 +31,7 @@ import me.inibukanadit.rajaapi.wilayah.WilayahApi
 ```
 
 #### API : Mendapatkan Kode Unik
-```
+```kotlin
 //...
   GlobalScope.launch {
     val code = WilayahApi.getKodeUnik()
@@ -45,7 +45,7 @@ import me.inibukanadit.rajaapi.wilayah.WilayahApi
   GlobalScope.launch {
     val result = WilayahApi.getProvinsi(kodeUnik)
     when(result) {
-      is Result.Success<*> -> doSomething(result.data is List<Area>)
+      is Result.Success<*> -> doSomething(result.data as List<Area>)
       is Result.Error -> showErrorMessage(result.message)
     }
   }
@@ -58,7 +58,7 @@ import me.inibukanadit.rajaapi.wilayah.WilayahApi
   GlobalScope.launch {
     val result = WilayahApi.getKabupaten(kodeUnik, provinsiId)
     when(result) {
-      is Result.Success<*> -> doSomething(result.data is List<Area>)
+      is Result.Success<*> -> doSomething(result.data as List<Area>)
       is Result.Error -> showErrorMessage(result.message)
     }
   }
@@ -71,7 +71,7 @@ import me.inibukanadit.rajaapi.wilayah.WilayahApi
   GlobalScope.launch {
     val result = WilayahApi.getKabupaten(kodeUnik, kabupatenId)
     when(result) {
-      is Result.Success<*> -> doSomething(result.data is List<Area>)
+      is Result.Success<*> -> doSomething(result.data as List<Area>)
       is Result.Error -> showErrorMessage(result.message)
     }
   }
@@ -84,7 +84,7 @@ import me.inibukanadit.rajaapi.wilayah.WilayahApi
   GlobalScope.launch {
     val result = WilayahApi.getKabupaten(kodeUnik, kecamatanId)
     when(result) {
-      is Result.Success<*> -> doSomething(result.data is List<Area>)
+      is Result.Success<*> -> doSomething(result.data as List<Area>)
       is Result.Error -> showErrorMessage(result.message)
     }
   }
