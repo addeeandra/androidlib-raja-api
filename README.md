@@ -20,7 +20,7 @@ dependencies {
 }
 ```
 
-Replace **x.x.x** with latest version releases : [See here](https://github.com/inibukanadit/raja-api/releases)*
+Replace **x.x.x** with latest version releases : [See here](https://github.com/inibukanadit/raja-api/releases)
 
 ## How to use
 #### Import the Singleton Object
