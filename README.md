@@ -6,7 +6,7 @@ Note : This library are using **Kotlin Coroutines**.
 ```gradle
 allprojects {
   repositories {
-    ...
+    //...
     maven { url "https://jitpack.io" }
   }
 }
@@ -14,9 +14,9 @@ allprojects {
 2. Add `implementation 'com.github.inibukanadit:raja-api:x.x.x'` on module level `build.gradle`
 ```gradle
 dependencies {
-  ...
+  //...
   implementation 'com.github.inibukanadit:raja-api:x.x.x'
-  ...
+  //...
 }
 ```
 
