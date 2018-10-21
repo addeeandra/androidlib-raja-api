@@ -1,35 +1,38 @@
 package me.inibukanadit.rajaapi.wilayah
 
+import kotlinx.coroutines.experimental.Deferred
+import kotlinx.coroutines.experimental.GlobalScope
+import kotlinx.coroutines.experimental.async
 import me.inibukanadit.rajaapi.wilayah.util.sendGetRequest
 import org.json.JSONObject
 
-class WilayahApiCoroutineService : WilayahApi<Result>() {
+class WilayahApiCoroutineService : WilayahApi<Deferred<Result>>() {
 
-    override suspend fun getKodeUnik(): Result {
+    override fun getKodeUnik(): Deferred<Result> = GlobalScope.async {
         val response = sendGetRequest("$API_HOST/poe").await()
         val json = JSONObject(response)
 
-        return if (getStatusSuccess(json)) {
+        if (getStatusSuccess(json)) {
             Result.Success(json.getString("token"))
         } else {
             Result.Error(getStatusCode(json), getStatusMessage(json))
         }
     }
 
-    override suspend fun getProvinsi(kodeUnik: String): Result {
-        return getArea(kodeUnik, PATH_PROVINCE)
+    override fun getProvinsi(kodeUnik: String): Deferred<Result> = GlobalScope.async {
+        getArea(kodeUnik, PATH_PROVINCE)
     }
 
-    override suspend fun getKabupaten(kodeUnik: String, provinsiId: Int): Result {
-        return getArea(kodeUnik, PATH_CITY, "idpropinsi", provinsiId)
+    override fun getKabupaten(kodeUnik: String, provinsiId: Int): Deferred<Result> = GlobalScope.async {
+        getArea(kodeUnik, PATH_CITY, "idpropinsi", provinsiId)
     }
 
-    override suspend fun getKecamatan(kodeUnik: String, kabupatenId: Int): Result {
-        return getArea(kodeUnik, PATH_DISTRICT, "idkabupaten", kabupatenId)
+    override fun getKecamatan(kodeUnik: String, kabupatenId: Int): Deferred<Result> = GlobalScope.async {
+        getArea(kodeUnik, PATH_DISTRICT, "idkabupaten", kabupatenId)
     }
 
-    override suspend fun getKelurahan(kodeUnik: String, kecamatanId: Int): Result {
-        return getArea(kodeUnik, PATH_VILLAGE, "idkecamatan", kecamatanId)
+    override fun getKelurahan(kodeUnik: String, kecamatanId: Int): Deferred<Result> = GlobalScope.async {
+        getArea(kodeUnik, PATH_VILLAGE, "idkecamatan", kecamatanId)
     }
 
     private suspend fun getArea(

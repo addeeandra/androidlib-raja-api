@@ -15,11 +15,11 @@ abstract class WilayahApi<T> {
         const val PATH_VILLAGE = "kelurahan"
     }
 
-    abstract suspend fun getKodeUnik(): T
-    abstract suspend fun getProvinsi(kodeUnik: String): T
-    abstract suspend fun getKabupaten(kodeUnik: String, provinsiId: Int): T
-    abstract suspend fun getKecamatan(kodeUnik: String, kabupatenId: Int): T
-    abstract suspend fun getKelurahan(kodeUnik: String, kecamatanId: Int): T
+    abstract fun getKodeUnik(): T
+    abstract fun getProvinsi(kodeUnik: String): T
+    abstract fun getKabupaten(kodeUnik: String, provinsiId: Int): T
+    abstract fun getKecamatan(kodeUnik: String, kabupatenId: Int): T
+    abstract fun getKelurahan(kodeUnik: String, kecamatanId: Int): T
 
     protected fun buildUrl(uniqueCode: String, path: String): String {
         return String.format(API_WILAYAH_URL, uniqueCode, path)
