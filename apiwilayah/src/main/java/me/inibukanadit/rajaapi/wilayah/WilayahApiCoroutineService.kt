@@ -6,7 +6,7 @@ import kotlinx.coroutines.experimental.async
 import me.inibukanadit.rajaapi.wilayah.util.sendGetRequest
 import org.json.JSONObject
 
-class WilayahApiCoroutineService : WilayahApi<Deferred<Result>>() {
+class WilayahApiCoroutineService : WilayahApiService<Deferred<Result>>() {
 
     companion object {
 

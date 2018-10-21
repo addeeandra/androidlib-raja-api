@@ -1,65 +1,66 @@
 package me.inibukanadit.rajaapi.wilayah
 
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
+import me.inibukanadit.rajaapi.wilayah.model.Area
+import org.json.JSONObject
 
-class WilayahApiService(private val mResultCallback: ResultCallback) : WilayahApi<Unit>() {
+abstract class WilayahApiService<T> {
 
     companion object {
+        const val API_HOST = BuildConfig.API_HOST
+        const val API_WILAYAH_URL = API_HOST + "MeP7c5ne%s/m/wilayah%s"
 
-        private var mInstance: WilayahApiService? = null
-
-        @Synchronized
-        fun instance(callback: ResultCallback): WilayahApiService {
-            if (mInstance == null) {
-                mInstance = WilayahApiService(callback)
-            }
-            return mInstance as WilayahApiService
-        }
-
+        const val PATH_PROVINCE = "provinsi"
+        const val PATH_CITY = "kabupaten"
+        const val PATH_DISTRICT = "kecamatan"
+        const val PATH_VILLAGE = "kelurahan"
     }
 
-    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.instance() }
+    abstract fun getKodeUnik(): T
+    abstract fun getProvinsi(kodeUnik: String): T
+    abstract fun getKabupaten(kodeUnik: String, provinsiId: Int): T
+    abstract fun getKecamatan(kodeUnik: String, kabupatenId: Int): T
+    abstract fun getKelurahan(kodeUnik: String, kecamatanId: Int): T
 
-    override fun getKodeUnik() {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKodeUnik().await()
-            mResultCallback.onResult(result)
-        }
+    protected fun buildUrl(uniqueCode: String, path: String): String {
+        return String.format(API_WILAYAH_URL, uniqueCode, path)
     }
 
-    override fun getProvinsi(kodeUnik: String) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getProvinsi(kodeUnik).await()
-            mResultCallback.onResult(result)
+    protected fun getListAreaFromJson(obj: JSONObject): List<Area> {
+        val data = obj.getJSONArray("data")
+        val modelList = mutableListOf<Area>()
+
+        for (i in (0 until data.length())) {
+            val id = data.getJSONObject(i).getInt("id")
+            val name = data.getJSONObject(i).getString("name")
+
+            modelList += Area(id, name)
         }
+
+        return modelList
     }
 
-    override fun getKabupaten(kodeUnik: String, provinsiId: Int) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKabupaten(kodeUnik, provinsiId).await()
-            mResultCallback.onResult(result)
-        }
-    }
-
-    override fun getKecamatan(kodeUnik: String, kabupatenId: Int) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKecamatan(kodeUnik, kabupatenId).await()
-            mResultCallback.onResult(result)
+    protected fun getStatusSuccess(obj: JSONObject): Boolean {
+        return if (obj.has("success")) {
+            obj.getBoolean("success")
+        } else {
+            false
         }
     }
 
-    override fun getKelurahan(kodeUnik: String, kecamatanId: Int) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKelurahan(kodeUnik, kecamatanId).await()
-            mResultCallback.onResult(result)
+    protected fun getStatusCode(obj: JSONObject): Int {
+        return if (obj.has("code")) {
+            obj.getInt("code")
+        } else {
+            500
         }
     }
 
-    interface ResultCallback {
-
-        fun onResult(result: Result)
-
+    protected fun getStatusMessage(obj: JSONObject): String {
+        return if (obj.has("data")) {
+            obj.getString("data")
+        } else {
+            ""
+        }
     }
 
 }
