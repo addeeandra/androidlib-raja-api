@@ -1,10 +1,10 @@
 # Raja Api
-Note : This library are using **Kotlin Coroutines**.
+Note : This library are available with **Kotlin Coroutines** and **async callback**.
 
 [![](https://jitpack.io/v/inibukanadit/raja-api.svg)](https://jitpack.io/#inibukanadit/raja-api)
 
 ## Installation
-1. Add `maven { url "https://jitpack.io" }` on your root `build.gradle`
+1. Add maven repository on your root `build.gradle`
 ```gradle
 allprojects {
   repositories {
@@ -13,7 +13,7 @@ allprojects {
   }
 }
 ```
-2. Add `implementation 'com.github.inibukanadit:raja-api:x.x.x'` on module level `build.gradle`
+2. Add the dependencies on module level `build.gradle`
 ```gradle
 dependencies {
   //...
@@ -22,73 +22,44 @@ dependencies {
 }
 ```
 
-Replace **x.x.x** with latest version releases : [See here](https://github.com/inibukanadit/raja-api/releases)
+## How to use - Kotlin Coroutines
 
-## How to use
-#### Import the Singleton Object
+Ensure to call it inside Coroutines - `launch { ... }` or `async { ... }`
+
+#### First - Get the API Instance
 ```kotlin
-import me.inibukanadit.rajaapi.wilayah.WilayahApiCoroutineService
+val mApiInstance = WilayahApiCoroutineService.instance()
 ```
 
 #### API : Mendapatkan Kode Unik
 ```kotlin
-//...
-  GlobalScope.launch {
-    val code = WilayahApi.getKodeUnik()
-    saveTheCodeSomewhere(code) // save it to later use
-  }
-//...
+  val result = mApiInstance.getKodeUnik().await()
+  val uniqueCode = WilayahApi.getUniqueCode(result)
+  // save the unique code somewhere
 ```
+
 #### API : Mendapatkan Daftar Provinsi
 ```kotlin
-//...
-  GlobalScope.launch {
-    val result = WilayahApi.getProvinsi(kodeUnik)
-    when(result) {
-      is Result.Success<*> -> doSomething(result.data as List<Area>)
-      is Result.Error -> showErrorMessage(result.message)
-    }
-  }
-//...
+  val result = mApiInstance.getProvinsi(uniqueCode).await()
+  val provinces = WilayahApi.getAreaList(result) // List<Area>
 ```
 
 #### API : Mendapatkan Daftar Kabupaten
 ```kotlin
-//...
-  GlobalScope.launch {
-    val result = WilayahApi.getKabupaten(kodeUnik, provinsiId)
-    when(result) {
-      is Result.Success<*> -> doSomething(result.data as List<Area>)
-      is Result.Error -> showErrorMessage(result.message)
-    }
-  }
-//...
+  val result = mApiInstance.getKabupaten(uniqueCode, provinceId).await()
+  val cities = WilayahApi.getAreaList(result) // List<Area>
 ```
 
 #### API : Mendapatkan Daftar Kecamatan
 ```kotlin
-//...
-  GlobalScope.launch {
-    val result = WilayahApi.getKabupaten(kodeUnik, kabupatenId)
-    when(result) {
-      is Result.Success<*> -> doSomething(result.data as List<Area>)
-      is Result.Error -> showErrorMessage(result.message)
-    }
-  }
-//...
+  val result = mApiInstance.getKecamatan(uniqueCode, kabupatenId).await()
+  val districts = WilayahApi.getAreaList(result) // List<Area>
 ```
 
 #### API : Mendapatkan Daftar Kelurahan
 ```kotlin
-//...
-  GlobalScope.launch {
-    val result = WilayahApi.getKabupaten(kodeUnik, kecamatanId)
-    when(result) {
-      is Result.Success<*> -> doSomething(result.data as List<Area>)
-      is Result.Error -> showErrorMessage(result.message)
-    }
-  }
-//...
+  val result = mApiInstance.getKelurahan(uniqueCode, kecamatanId).await()
+  val villages = WilayahApi.getAreaList(result) // List<Area>
 ```
 
 ## Contribute
