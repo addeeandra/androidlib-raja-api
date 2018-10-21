@@ -105,6 +105,6 @@ Penerapan lainnya sama seperti _API : Mendapatkan Provinsi_
 ```
 
 ## Kontribusi
-Silakan laporkan jika ada _bugs_ ataupun _additional feature_ yang perlu ditambahkan ke dalam _issues tracker_ ataupun _pull request_.
+Silakan laporkan jika ada _bugs_ ataupun _additional feature_ yang perlu ditambahkan ke dalam _issues tracker_ dan _pull request_.
 
-Semoga bermanfaat :D
+Semoga bermanfaat~
