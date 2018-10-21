@@ -19,7 +19,7 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mUniqueCode: String
 
-    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.getInstance() }
+    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.instance() }
 
     private val mAdapterProvince: ArrayAdapter<String> by lazy {
         ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, mutableListOf())

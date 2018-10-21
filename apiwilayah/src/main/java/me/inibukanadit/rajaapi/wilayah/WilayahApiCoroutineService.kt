@@ -13,7 +13,7 @@ class WilayahApiCoroutineService : WilayahApi<Deferred<Result>>() {
         private var mInstance: WilayahApiCoroutineService? = null
 
         @Synchronized
-        fun getInstance(): WilayahApiCoroutineService {
+        fun instance(): WilayahApiCoroutineService {
             if (mInstance == null) {
                 mInstance = WilayahApiCoroutineService()
             }

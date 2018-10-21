@@ -10,7 +10,7 @@ class WilayahApiService(private val mResultCallback: ResultCallback) : WilayahAp
         private var mInstance: WilayahApiService? = null
 
         @Synchronized
-        fun getInstance(callback: ResultCallback): WilayahApiService {
+        fun instance(callback: ResultCallback): WilayahApiService {
             if (mInstance == null) {
                 mInstance = WilayahApiService(callback)
             }
@@ -19,7 +19,7 @@ class WilayahApiService(private val mResultCallback: ResultCallback) : WilayahAp
 
     }
 
-    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.getInstance() }
+    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.instance() }
 
     override fun getKodeUnik() {
         GlobalScope.launch {
