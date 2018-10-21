@@ -19,6 +19,8 @@ class MainActivity : AppCompatActivity() {
 
     private lateinit var mUniqueCode: String
 
+    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.getInstance() }
+
     private val mAdapterProvince: ArrayAdapter<String> by lazy {
         ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, mutableListOf())
     }
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUniqueCode() {
         GlobalScope.launch(Dispatchers.Main) {
-            val result = WilayahApiCoroutineService.getKodeUnik()
+            val result = WilayahApiCoroutineService().getKodeUnik().await()
             when (result) {
                 is Result.Success<*> -> {
                     mUniqueCode = result.data as String
@@ -62,7 +64,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun loadProvinces(uniqueCode: String) {
-        val result = WilayahApiCoroutineService.getProvinsi(uniqueCode)
+        val result = mWilayahApiCoroutineService.getProvinsi(uniqueCode).await()
         when (result) {
             is Result.Success<*> -> {
                 val data = result.data as List<Area>
@@ -72,36 +74,42 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    suspend fun loadCities(uniqueCode: String, provinceId: Int) {
-        val result = WilayahApiCoroutineService.getKabupaten(uniqueCode, provinceId)
-        when (result) {
-            is Result.Success<*> -> {
-                val data = result.data as List<Area>
-                showCities(data)
+    fun loadCities(uniqueCode: String, provinceId: Int) {
+        GlobalScope.launch(Dispatchers.Main) {
+            val result = mWilayahApiCoroutineService.getKabupaten(uniqueCode, provinceId).await()
+            when (result) {
+                is Result.Success<*> -> {
+                    val data = result.data as List<Area>
+                    showCities(data)
+                }
+                is Result.Error -> showMessage(result.message)
             }
-            is Result.Error -> showMessage(result.message)
         }
     }
 
-    suspend fun loadDistricts(uniqueCode: String, cityId: Int) {
-        val result = WilayahApiCoroutineService.getKecamatan(uniqueCode, cityId)
-        when (result) {
-            is Result.Success<*> -> {
-                val data = result.data as List<Area>
-                showDistricts(data)
+    fun loadDistricts(uniqueCode: String, cityId: Int) {
+        GlobalScope.launch(Dispatchers.Main) {
+            val result = mWilayahApiCoroutineService.getKecamatan(uniqueCode, cityId).await()
+            when (result) {
+                is Result.Success<*> -> {
+                    val data = result.data as List<Area>
+                    showDistricts(data)
+                }
+                is Result.Error -> showMessage(result.message)
             }
-            is Result.Error -> showMessage(result.message)
         }
     }
 
-    suspend fun loadVillages(uniqueCode: String, districtId: Int) {
-        val result = WilayahApiCoroutineService.getKelurahan(uniqueCode, districtId)
-        when (result) {
-            is Result.Success<*> -> {
-                val data = result.data as List<Area>
-                showVillages(data)
+    fun loadVillages(uniqueCode: String, districtId: Int) {
+        GlobalScope.launch(Dispatchers.Main) {
+            val result = mWilayahApiCoroutineService.getKelurahan(uniqueCode, districtId).await()
+            when (result) {
+                is Result.Success<*> -> {
+                    val data = result.data as List<Area>
+                    showVillages(data)
+                }
+                is Result.Error -> showMessage(result.message)
             }
-            is Result.Error -> showMessage(result.message)
         }
     }
 
@@ -114,9 +122,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GlobalScope.launch(Dispatchers.Main) {
-                    loadCities(mUniqueCode, mProvinceList[position].id)
-                }
+                loadCities(mUniqueCode, mProvinceList[position].id)
                 clearCities()
             }
         }
@@ -131,7 +137,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GlobalScope.launch(Dispatchers.Main) { loadDistricts(mUniqueCode, mCityList[position].id) }
+                loadDistricts(mUniqueCode, mCityList[position].id)
                 clearDistricts()
             }
         }
@@ -146,7 +152,7 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GlobalScope.launch(Dispatchers.Main) { loadVillages(mUniqueCode, mDistrictList[position].id) }
+                loadVillages(mUniqueCode, mDistrictList[position].id)
                 clearVillages()
             }
         }

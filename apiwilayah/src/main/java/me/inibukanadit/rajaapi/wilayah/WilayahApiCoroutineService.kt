@@ -8,6 +8,20 @@ import org.json.JSONObject
 
 class WilayahApiCoroutineService : WilayahApi<Deferred<Result>>() {
 
+    companion object {
+
+        private var mInstance: WilayahApiCoroutineService? = null
+
+        @Synchronized
+        fun getInstance(): WilayahApiCoroutineService {
+            if (mInstance == null) {
+                mInstance = WilayahApiCoroutineService()
+            }
+            return mInstance as WilayahApiCoroutineService
+        }
+
+    }
+
     override fun getKodeUnik(): Deferred<Result> = GlobalScope.async {
         val response = sendGetRequest("$API_HOST/poe").await()
         val json = JSONObject(response)
