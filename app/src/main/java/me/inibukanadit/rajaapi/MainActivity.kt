@@ -1,7 +1,7 @@
 package me.inibukanadit.rajaapi
 
-import android.support.v7.app.AppCompatActivity
 import android.os.Bundle
+import android.support.v7.app.AppCompatActivity
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
@@ -11,13 +11,15 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
-import me.inibukanadit.rajaapi.wilayah.Result
-import me.inibukanadit.rajaapi.wilayah.WilayahApi
-import me.inibukanadit.rajaapi.wilayah.model.*
+import me.inibukanadit.rajaapi.wilayah.*
+import me.inibukanadit.rajaapi.wilayah.model.Area
 
 class MainActivity : AppCompatActivity() {
 
     private lateinit var mUniqueCode: String
+
+    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.instance() }
+    private val mWilayahApiAsyncService by lazy { WilayahApiAsyncService.instance() }
 
     private val mAdapterProvince: ArrayAdapter<String> by lazy {
         ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, mutableListOf())
@@ -50,62 +52,65 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUniqueCode() {
         GlobalScope.launch(Dispatchers.Main) {
-            val result = WilayahApi.getKodeUnik()
-            when (result) {
-                is Result.Success<*> -> {
-                    mUniqueCode = result.data as String
-                    loadProvinces(mUniqueCode)
-                }
-                is Result.Error -> showMessage(result.message)
+            val result = mWilayahApiCoroutineService.getKodeUnik().await()
+            val code = WilayahApi.getUniqueCode(result)
+
+            if (code != null) {
+                mUniqueCode = code
+                loadProvinces(code)
+            } else {
+                showMessage(WilayahApi.getDataMessage(result))
             }
         }
     }
 
-    suspend fun loadProvinces(uniqueCode: String) {
-        val result = WilayahApi.getProvinsi(uniqueCode)
-        when (result) {
-            is Result.Success<*> -> {
-                val data = result.data as List<Area>
-                showProvinces(data)
-            }
-            is Result.Error -> showMessage(result.message)
+    private fun loadProvinces(uniqueCode: String) {
+        // using async callback
+        mWilayahApiAsyncService
+                .getProvinsi(uniqueCode)
+                .execute(object : WilayahApiAsyncWrapper.Callback<List<Area>> {
+                    override fun onResult(data: List<Area>?, error: String?) {
+                        if (error == null) showProvinces(data as List<Area>)
+                        else showMessage(error)
+                    }
+                })
+    }
+
+    private fun loadCities(uniqueCode: String, provinceId: Int) {
+        // using async callback
+        mWilayahApiAsyncService
+                .getKabupaten(uniqueCode, provinceId)
+                .execute(object : WilayahApiAsyncWrapper.Callback<List<Area>> {
+                    override fun onResult(data: List<Area>?, error: String?) {
+                        if (error == null) showCities(data as List<Area>)
+                        else showMessage(error)
+                    }
+                })
+    }
+
+    private fun loadDistricts(uniqueCode: String, cityId: Int) {
+        // using coroutines
+        GlobalScope.launch(Dispatchers.Main) {
+            val result = mWilayahApiCoroutineService.getKecamatan(uniqueCode, cityId).await()
+            val data = WilayahApi.getAreaList(result)
+
+            if (data != null) showDistricts(data)
+            else showMessage(WilayahApi.getDataMessage(result))
         }
     }
 
-    suspend fun loadCities(uniqueCode: String, provinceId: Int) {
-        val result = WilayahApi.getKabupaten(uniqueCode, provinceId)
-        when (result) {
-            is Result.Success<*> -> {
-                val data = result.data as List<Area>
-                showCities(data)
-            }
-            is Result.Error -> showMessage(result.message)
+    private fun loadVillages(uniqueCode: String, districtId: Int) {
+        // using coroutines
+        GlobalScope.launch(Dispatchers.Main) {
+            val result = mWilayahApiCoroutineService.getKelurahan(uniqueCode, districtId).await()
+            val data = WilayahApi.getAreaList(result)
+
+            if (data != null) showVillages(data)
+            else showMessage(WilayahApi.getDataMessage(result))
         }
     }
 
-    suspend fun loadDistricts(uniqueCode: String, cityId: Int) {
-        val result = WilayahApi.getKecamatan(uniqueCode, cityId)
-        when (result) {
-            is Result.Success<*> -> {
-                val data = result.data as List<Area>
-                showDistricts(data)
-            }
-            is Result.Error -> showMessage(result.message)
-        }
-    }
-
-    suspend fun loadVillages(uniqueCode: String, districtId: Int) {
-        val result = WilayahApi.getKelurahan(uniqueCode, districtId)
-        when (result) {
-            is Result.Success<*> -> {
-                val data = result.data as List<Area>
-                showVillages(data)
-            }
-            is Result.Error -> showMessage(result.message)
-        }
-    }
-
-    fun showProvinces(provinces: List<Area>) {
+    private fun showProvinces(provinces: List<Area>) {
         mProvinceList = provinces.toMutableList()
         showData(sp_province, mAdapterProvince, mProvinceList)
 
@@ -114,15 +119,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GlobalScope.launch(Dispatchers.Main) {
-                    loadCities(mUniqueCode, mProvinceList[position].id)
-                }
+                loadCities(mUniqueCode, mProvinceList[position].id)
                 clearCities()
             }
         }
     }
 
-    fun showCities(cities: List<Area>) {
+    private fun showCities(cities: List<Area>) {
         mCityList = cities.toMutableList()
         showData(sp_city, mAdapterCity, mCityList)
 
@@ -131,13 +134,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GlobalScope.launch(Dispatchers.Main) { loadDistricts(mUniqueCode, mCityList[position].id) }
+                loadDistricts(mUniqueCode, mCityList[position].id)
                 clearDistricts()
             }
         }
     }
 
-    fun showDistricts(districts: List<Area>) {
+    private fun showDistricts(districts: List<Area>) {
         mDistrictList = districts.toMutableList()
         showData(sp_district, mAdapterDistrict, mDistrictList)
 
@@ -146,13 +149,13 @@ class MainActivity : AppCompatActivity() {
             }
 
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
-                GlobalScope.launch(Dispatchers.Main) { loadVillages(mUniqueCode, mDistrictList[position].id) }
+                loadVillages(mUniqueCode, mDistrictList[position].id)
                 clearVillages()
             }
         }
     }
 
-    fun showVillages(villages: List<Area>) {
+    private fun showVillages(villages: List<Area>) {
         mVillageList = villages.toMutableList()
         showData(sp_village, mAdapterVilage, mVillageList)
 
@@ -165,29 +168,24 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    fun showData(spinner: Spinner, adapter: ArrayAdapter<String>, areas: List<Area>) {
+    private fun showData(spinner: Spinner, adapter: ArrayAdapter<String>, areas: List<Area>) {
         spinner.adapter = adapter.apply {
             clear()
             addAll(areas.map { it.name })
         }
     }
 
-    fun clearProvinces() {
-        showProvinces(listOf())
-        clearCities()
-    }
-
-    fun clearCities() {
+    private fun clearCities() {
         showCities(listOf())
         clearDistricts()
     }
 
-    fun clearDistricts() {
+    private fun clearDistricts() {
         showDistricts(listOf())
         clearVillages()
     }
 
-    fun clearVillages() {
+    private fun clearVillages() {
         showVillages(listOf())
     }
 
