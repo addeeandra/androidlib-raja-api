@@ -25,22 +25,22 @@ object WilayahApi {
     }
 
     suspend fun getProvinsi(kodeUnik: String): Result {
-        return getArea<Provinsi>(kodeUnik, "provinsi")
+        return getArea(kodeUnik, "provinsi")
     }
 
     suspend fun getKabupaten(kodeUnik: String, provinsiId: Int): Result {
-        return getArea<Kecamatan>(kodeUnik, "kabupaten", "idpropinsi", provinsiId)
+        return getArea(kodeUnik, "kabupaten", "idpropinsi", provinsiId)
     }
 
     suspend fun getKecamatan(kodeUnik: String, kabupatenId: Int): Result {
-        return getArea<Kecamatan>(kodeUnik, "kecamatan", "idkabupaten", kabupatenId)
+        return getArea(kodeUnik, "kecamatan", "idkabupaten", kabupatenId)
     }
 
     suspend fun getKelurahan(kodeUnik: String, kecamatanId: Int): Result {
-        return getArea<Kelurahan>(kodeUnik, "kelurahan", "idkecamatan", kecamatanId)
+        return getArea(kodeUnik, "kelurahan", "idkecamatan", kecamatanId)
     }
 
-    suspend fun <T : Area> getArea(
+    suspend fun getArea(
             kodeUnik: String,
             areaName: String,
             keywordId: String? = null,
@@ -53,21 +53,21 @@ object WilayahApi {
         val json = JSONObject(response)
 
         return if (getStatusSuccess(json)) {
-            Result.Success(responseToModel<T>(json))
+            Result.Success(responseToModel(json))
         } else {
             Result.Error(getStatusCode(json), getStatusMessage(json))
         }
     }
 
-    private fun <T : Area> responseToModel(obj: JSONObject): List<T> {
+    private fun responseToModel(obj: JSONObject): List<Area> {
         val data = obj.getJSONArray("data")
-        val modelList = mutableListOf<T>()
+        val modelList = mutableListOf<Area>()
 
         for (i in (0 until data.length())) {
             val id = data.getJSONObject(i).getInt("id")
             val name = data.getJSONObject(i).getString("name")
 
-            modelList += Area(id, name) as T
+            modelList += Area(id, name)
         }
 
         return modelList
