@@ -5,7 +5,21 @@ import kotlinx.coroutines.experimental.launch
 
 class WilayahApiService(private val mResultCallback: ResultCallback) : WilayahApi<Unit>() {
 
-    private val mWilayahApiCoroutineService = WilayahApiCoroutineService()
+    companion object {
+
+        private var mInstance: WilayahApiService? = null
+
+        @Synchronized
+        fun getInstance(callback: ResultCallback): WilayahApiService {
+            if (mInstance == null) {
+                mInstance = WilayahApiService(callback)
+            }
+            return mInstance as WilayahApiService
+        }
+
+    }
+
+    private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.getInstance() }
 
     override fun getKodeUnik() {
         GlobalScope.launch {
