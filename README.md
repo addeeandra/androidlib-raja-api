@@ -27,7 +27,7 @@ Replace **x.x.x** with latest version releases : [See here](https://github.com/i
 ## How to use
 #### Import the Singleton Object
 ```kotlin
-import me.inibukanadit.rajaapi.wilayah.WilayahApi
+import me.inibukanadit.rajaapi.wilayah.WilayahApiCoroutineService
 ```
 
 #### API : Mendapatkan Kode Unik

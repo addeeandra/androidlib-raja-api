@@ -12,7 +12,7 @@ import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
 import me.inibukanadit.rajaapi.wilayah.Result
-import me.inibukanadit.rajaapi.wilayah.WilayahApi
+import me.inibukanadit.rajaapi.wilayah.WilayahApiCoroutineService
 import me.inibukanadit.rajaapi.wilayah.model.*
 
 class MainActivity : AppCompatActivity() {
@@ -50,7 +50,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUniqueCode() {
         GlobalScope.launch(Dispatchers.Main) {
-            val result = WilayahApi.getKodeUnik()
+            val result = WilayahApiCoroutineService.getKodeUnik()
             when (result) {
                 is Result.Success<*> -> {
                     mUniqueCode = result.data as String
@@ -62,7 +62,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun loadProvinces(uniqueCode: String) {
-        val result = WilayahApi.getProvinsi(uniqueCode)
+        val result = WilayahApiCoroutineService.getProvinsi(uniqueCode)
         when (result) {
             is Result.Success<*> -> {
                 val data = result.data as List<Area>
@@ -73,7 +73,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun loadCities(uniqueCode: String, provinceId: Int) {
-        val result = WilayahApi.getKabupaten(uniqueCode, provinceId)
+        val result = WilayahApiCoroutineService.getKabupaten(uniqueCode, provinceId)
         when (result) {
             is Result.Success<*> -> {
                 val data = result.data as List<Area>
@@ -84,7 +84,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun loadDistricts(uniqueCode: String, cityId: Int) {
-        val result = WilayahApi.getKecamatan(uniqueCode, cityId)
+        val result = WilayahApiCoroutineService.getKecamatan(uniqueCode, cityId)
         when (result) {
             is Result.Success<*> -> {
                 val data = result.data as List<Area>
@@ -95,7 +95,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     suspend fun loadVillages(uniqueCode: String, districtId: Int) {
-        val result = WilayahApi.getKelurahan(uniqueCode, districtId)
+        val result = WilayahApiCoroutineService.getKelurahan(uniqueCode, districtId)
         when (result) {
             is Result.Success<*> -> {
                 val data = result.data as List<Area>
