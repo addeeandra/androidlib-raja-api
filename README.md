@@ -1,10 +1,10 @@
 # Raja Api
-Note : This library are available with **Kotlin Coroutines** and **async callback**.
+_Library_ ini menggunakan _**Kotlin Coroutines**_ dan _**Async Callback**_.
 
 [![](https://jitpack.io/v/inibukanadit/raja-api.svg)](https://jitpack.io/#inibukanadit/raja-api)
 
-## Installation
-1. Add maven repository on your root `build.gradle`
+## Instalasi
+1. Tambahkan _maven repository_ di _root_ `build.gradle`
 ```gradle
 allprojects {
   repositories {
@@ -13,7 +13,7 @@ allprojects {
   }
 }
 ```
-2. Add the dependencies on module level `build.gradle`
+2. Tambahkan _dependencies_ pada `build.gradle` di tingkat _module_
 ```gradle
 dependencies {
   //...
@@ -22,14 +22,18 @@ dependencies {
 }
 ```
 
-## How to use - Kotlin Coroutines
+## Penggunaan
+Lihat _demo_ untuk melihat penggunaan _library_ secara keseluruhan
 
-Ensure to call it inside Coroutines - `launch { ... }` or `async { ... }`
+## Penggunaan - _Kotlin Coroutines_
 
-#### First - Get the API Instance
+#### Inisialisasi _Coroutine Service_ dari Wilayah API
 ```kotlin
 val mApiInstance = WilayahApiCoroutineService.instance()
 ```
+
+Pastikan untuk memanggil fungsi di bawah ini dengan `launch { ... }` atau `async { ... }`
+
 
 #### API : Mendapatkan Kode Unik
 ```kotlin
@@ -62,5 +66,45 @@ val mApiInstance = WilayahApiCoroutineService.instance()
   val villages = WilayahApi.getAreaList(result) // List<Area>
 ```
 
-## Contribute
-I would love to know what you need. Issues and pull requests would be helped.
+## Penggunaan - _Async Callback_
+
+#### Inisialisasi _Async Service_ dari Wilayah API
+```kotlin
+  val mApiInstance = WilayahApiAsyncService.instance()
+```
+
+#### API : Mendapatkan Kode Unik
+```kotlin
+  mApiInstance
+      .getKodeUnik()
+      .execute(object : WilayahApiAsyncWrapper.Callback<String> {
+        override fun onResult(data: String?, error: String?) {
+          data?.let { mUniqueCode = it }
+        }
+      })
+```
+
+#### API : Mendapatkan Provinsi
+```kotlin
+  mApiInstance
+      .getProvinsi(mUniqueCode)
+      .execute(object : WilayahApiAsyncWrapper.Callback<List<Area>> {
+        override fun onResult(data: List<Area>?, error: String?) {
+          data?.let { showProvince(it) }
+        }
+      })
+```
+
+#### API : Mendapatkan Wilayah Lain
+Penerapan lainnya sama seperti _API : Mendapatkan Provinsi_
+
+```kotlin
+  mApiInstance.getKabupaten(mUniqueCode, provinsiId).execute( ... )
+  mApiInstance.getKecamatan(mUniqueCode, kabupatenId).execute( ... )
+  mApiInstance.getKelurahan(mUniqueCode, kecamatanId).execute( ... )
+```
+
+## Kontribusi
+Silakan laporkan jika ada _bugs_ ataupun _additional feature_ yang perlu ditambahkan ke dalam _issues tracker_ ataupun _pull request_.
+
+Semoga bermanfaat :D
