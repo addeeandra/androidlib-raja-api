@@ -6,7 +6,7 @@ import org.json.JSONObject
 
 object WilayahApi {
 
-    private fun <T> safeResultDataCast(result: Result): T? {
+    internal fun <T> safeResultDataCast(result: Result): T? {
         return try {
             when (result) {
                 is Result.Success<*> -> result.data as T

@@ -1,18 +1,17 @@
 package me.inibukanadit.rajaapi.wilayah
 
-import kotlinx.coroutines.experimental.GlobalScope
-import kotlinx.coroutines.experimental.launch
+import me.inibukanadit.rajaapi.wilayah.model.Area
 
-class WilayahApiAsyncService(private val mResultCallback: ResultCallback) : WilayahApiService<Unit>() {
+class WilayahApiAsyncService private constructor() : WilayahApiService<WilayahApiAsyncWrapper<*>>() {
 
     companion object {
 
         private var mInstance: WilayahApiAsyncService? = null
 
         @Synchronized
-        fun instance(callback: ResultCallback): WilayahApiAsyncService {
+        fun instance(): WilayahApiAsyncService {
             if (mInstance == null) {
-                mInstance = WilayahApiAsyncService(callback)
+                mInstance = WilayahApiAsyncService()
             }
             return mInstance as WilayahApiAsyncService
         }
@@ -21,45 +20,24 @@ class WilayahApiAsyncService(private val mResultCallback: ResultCallback) : Wila
 
     private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.instance() }
 
-    override fun getKodeUnik() {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKodeUnik().await()
-            mResultCallback.onResult(result)
-        }
+    override fun getKodeUnik() = WilayahApiAsyncWrapper<String> {
+        mWilayahApiCoroutineService.getKodeUnik()
     }
 
-    override fun getProvinsi(kodeUnik: String) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getProvinsi(kodeUnik).await()
-            mResultCallback.onResult(result)
-        }
+    override fun getProvinsi(kodeUnik: String) = WilayahApiAsyncWrapper<List<Area>> {
+        mWilayahApiCoroutineService.getProvinsi(kodeUnik)
     }
 
-    override fun getKabupaten(kodeUnik: String, provinsiId: Int) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKabupaten(kodeUnik, provinsiId).await()
-            mResultCallback.onResult(result)
-        }
+    override fun getKabupaten(kodeUnik: String, provinsiId: Int) = WilayahApiAsyncWrapper<List<Area>> {
+        mWilayahApiCoroutineService.getKabupaten(kodeUnik, provinsiId)
     }
 
-    override fun getKecamatan(kodeUnik: String, kabupatenId: Int) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKecamatan(kodeUnik, kabupatenId).await()
-            mResultCallback.onResult(result)
-        }
+    override fun getKecamatan(kodeUnik: String, kabupatenId: Int) = WilayahApiAsyncWrapper<List<Area>> {
+        mWilayahApiCoroutineService.getKecamatan(kodeUnik, kabupatenId)
     }
 
-    override fun getKelurahan(kodeUnik: String, kecamatanId: Int) {
-        GlobalScope.launch {
-            val result = mWilayahApiCoroutineService.getKelurahan(kodeUnik, kecamatanId).await()
-            mResultCallback.onResult(result)
-        }
-    }
-
-    interface ResultCallback {
-
-        fun onResult(result: Result)
-
+    override fun getKelurahan(kodeUnik: String, kecamatanId: Int) = WilayahApiAsyncWrapper<List<Area>> {
+        mWilayahApiCoroutineService.getKelurahan(kodeUnik, kecamatanId)
     }
 
 }

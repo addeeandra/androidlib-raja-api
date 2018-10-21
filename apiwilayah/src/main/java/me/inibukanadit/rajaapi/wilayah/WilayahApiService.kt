@@ -5,6 +5,8 @@ import org.json.JSONObject
 
 abstract class WilayahApiService<T> {
 
+    internal constructor()
+
     companion object {
         const val API_HOST = BuildConfig.API_HOST
         const val API_WILAYAH_URL = API_HOST + "MeP7c5ne%s/m/wilayah%s"

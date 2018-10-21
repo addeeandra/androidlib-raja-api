@@ -11,8 +11,7 @@ import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.coroutines.experimental.Dispatchers
 import kotlinx.coroutines.experimental.GlobalScope
 import kotlinx.coroutines.experimental.launch
-import me.inibukanadit.rajaapi.wilayah.WilayahApi
-import me.inibukanadit.rajaapi.wilayah.WilayahApiCoroutineService
+import me.inibukanadit.rajaapi.wilayah.*
 import me.inibukanadit.rajaapi.wilayah.model.Area
 
 class MainActivity : AppCompatActivity() {
@@ -20,6 +19,7 @@ class MainActivity : AppCompatActivity() {
     private lateinit var mUniqueCode: String
 
     private val mWilayahApiCoroutineService by lazy { WilayahApiCoroutineService.instance() }
+    private val mWilayahApiAsyncService by lazy { WilayahApiAsyncService.instance() }
 
     private val mAdapterProvince: ArrayAdapter<String> by lazy {
         ArrayAdapter<String>(this@MainActivity, android.R.layout.simple_spinner_dropdown_item, mutableListOf())
@@ -52,7 +52,7 @@ class MainActivity : AppCompatActivity() {
 
     private fun initUniqueCode() {
         GlobalScope.launch(Dispatchers.Main) {
-            val result = WilayahApiCoroutineService().getKodeUnik().await()
+            val result = mWilayahApiCoroutineService.getKodeUnik().await()
             val code = WilayahApi.getUniqueCode(result)
 
             if (code != null) {
@@ -65,26 +65,31 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadProvinces(uniqueCode: String) {
-        GlobalScope.launch(Dispatchers.Main) {
-            val result = mWilayahApiCoroutineService.getProvinsi(uniqueCode).await()
-            val data = WilayahApi.getAreaList(result)
-
-            if (data != null) showProvinces(data)
-            else showMessage(WilayahApi.getDataMessage(result))
-        }
+        // using async callback
+        mWilayahApiAsyncService
+                .getProvinsi(uniqueCode)
+                .execute(object : WilayahApiAsyncWrapper.Callback<List<Area>> {
+                    override fun onResult(data: List<Area>?, error: String?) {
+                        if (error == null) showProvinces(data as List<Area>)
+                        else showMessage(error)
+                    }
+                })
     }
 
     private fun loadCities(uniqueCode: String, provinceId: Int) {
-        GlobalScope.launch(Dispatchers.Main) {
-            val result = mWilayahApiCoroutineService.getKabupaten(uniqueCode, provinceId).await()
-            val data = WilayahApi.getAreaList(result)
-
-            if (data != null) showCities(data)
-            else showMessage(WilayahApi.getDataMessage(result))
-        }
+        // using async callback
+        mWilayahApiAsyncService
+                .getKabupaten(uniqueCode, provinceId)
+                .execute(object : WilayahApiAsyncWrapper.Callback<List<Area>> {
+                    override fun onResult(data: List<Area>?, error: String?) {
+                        if (error == null) showCities(data as List<Area>)
+                        else showMessage(error)
+                    }
+                })
     }
 
     private fun loadDistricts(uniqueCode: String, cityId: Int) {
+        // using coroutines
         GlobalScope.launch(Dispatchers.Main) {
             val result = mWilayahApiCoroutineService.getKecamatan(uniqueCode, cityId).await()
             val data = WilayahApi.getAreaList(result)
@@ -95,6 +100,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun loadVillages(uniqueCode: String, districtId: Int) {
+        // using coroutines
         GlobalScope.launch(Dispatchers.Main) {
             val result = mWilayahApiCoroutineService.getKelurahan(uniqueCode, districtId).await()
             val data = WilayahApi.getAreaList(result)
