@@ -7,31 +7,54 @@
     android:padding="16dp"
     tools:context=".MainActivity">
 
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Provinsi" />
+
     <Spinner
         android:id="@+id/sp_province"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:padding="16dp" />
+        android:padding="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Kota" />
 
     <Spinner
         android:id="@+id/sp_city"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:padding="16dp" />
+        android:padding="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Kecamatan" />
 
     <Spinner
         android:id="@+id/sp_district"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:padding="16dp" />
+        android:padding="8dp" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:text="Kelurahan" />
 
     <Spinner
         android:id="@+id/sp_village"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="8dp"
-        android:padding="16dp" />
+        android:padding="8dp" />
 
 </LinearLayout>
