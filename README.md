@@ -1,5 +1,5 @@
 # Raja Api
-_Library_ ini menggunakan _**Kotlin Coroutines**_ dan _**Async Callback**_.
+Library ini menggunakan **Kotlin Coroutines** dan **Async Service (Callback)**. 
 
 [![](https://jitpack.io/v/inibukanadit/raja-api.svg)](https://jitpack.io/#inibukanadit/raja-api)
 
@@ -23,16 +23,16 @@ dependencies {
 ```
 
 ## Penggunaan
-Lihat _demo_ untuk melihat penggunaan _library_ secara keseluruhan
+Lihat **demo** untuk melihat penggunaan _library_ secara keseluruhan. Atau baca dokumentasinya di Wiki : https://github.com/inibukanadit/raja-api/wiki
 
-## Penggunaan - _Kotlin Coroutines_
+## Penggunaan - _Coroutines Service_
 
 #### Inisialisasi _Coroutine Service_ dari Wilayah API
 ```kotlin
 val mApiInstance = WilayahApiCoroutineService.instance()
 ```
 
-Pastikan untuk memanggil fungsi di bawah ini dengan `launch { ... }` atau `async { ... }`
+Pastikan untuk memanggil fungsi di bawah ini dengan `GlobalScope.launch { ... }` atau `GlobalScope.async { ... }`
 
 
 #### API : Mendapatkan Kode Unik
@@ -48,27 +48,11 @@ Pastikan untuk memanggil fungsi di bawah ini dengan `launch { ... }` atau `async
   val provinces = WilayahApi.getAreaList(result) // List<Area>
 ```
 
-#### API : Mendapatkan Daftar Kabupaten
-```kotlin
-  val result = mApiInstance.getKabupaten(uniqueCode, provinceId).await()
-  val cities = WilayahApi.getAreaList(result) // List<Area>
-```
+Lebih lengkapnya bisa Anda baca di Wiki : https://github.com/inibukanadit/raja-api/wiki/2.-Coroutine-Service
 
-#### API : Mendapatkan Daftar Kecamatan
-```kotlin
-  val result = mApiInstance.getKecamatan(uniqueCode, kabupatenId).await()
-  val districts = WilayahApi.getAreaList(result) // List<Area>
-```
+## Penggunaan - Async Service (Callback)
 
-#### API : Mendapatkan Daftar Kelurahan
-```kotlin
-  val result = mApiInstance.getKelurahan(uniqueCode, kecamatanId).await()
-  val villages = WilayahApi.getAreaList(result) // List<Area>
-```
-
-## Penggunaan - _Async Callback_
-
-#### Inisialisasi _Async Service_ dari Wilayah API
+#### Inisialisasi Async Service dari Wilayah API
 ```kotlin
   val mApiInstance = WilayahApiAsyncService.instance()
 ```
@@ -95,16 +79,9 @@ Pastikan untuk memanggil fungsi di bawah ini dengan `launch { ... }` atau `async
       })
 ```
 
-#### API : Mendapatkan Wilayah Lain
-Penerapan lainnya sama seperti _API : Mendapatkan Provinsi_
-
-```kotlin
-  mApiInstance.getKabupaten(mUniqueCode, provinsiId).execute( ... )
-  mApiInstance.getKecamatan(mUniqueCode, kabupatenId).execute( ... )
-  mApiInstance.getKelurahan(mUniqueCode, kecamatanId).execute( ... )
-```
+Lebih lengkapnya bisa Anda baca di Wiki : https://github.com/inibukanadit/raja-api/wiki/3.-Async-Service-(Callback)
 
 ## Kontribusi
-Silakan laporkan jika ada _bugs_ ataupun _additional feature_ yang perlu ditambahkan ke dalam _issues tracker_ dan _pull request_.
+Silakan laporkan jika ada bugs. Jika ada fitur yang ingin ditambahkan, silakan buat _issue_ baru atau lakukan _pull request_. :)
 
 Semoga bermanfaat~
