@@ -23,7 +23,7 @@ dependencies {
 ```
 
 ## Penggunaan
-Lihat **demo** untuk melihat penggunaan _library_ secara keseluruhan. Atau baca dokumentasinya di Wiki : https://github.com/inibukanadit/raja-api/wiki
+Lihat **demo** untuk melihat penggunaan _library_ secara keseluruhan. Atau baca dokumentasinya di Wiki : https://github.com/addeeandra/androidlib-raja-api/wiki
 
 ## Penggunaan - _Coroutines Service_
 
@@ -48,7 +48,7 @@ Pastikan untuk memanggil fungsi di bawah ini dengan `GlobalScope.launch { ... }`
   val provinces = WilayahApi.getAreaList(result) // List<Area>
 ```
 
-Lebih lengkapnya bisa Anda baca di Wiki : https://github.com/inibukanadit/raja-api/wiki/2.-Coroutine-Service
+Lebih lengkapnya bisa Anda baca di Wiki : https://github.com/addeeandra/androidlib-raja-api/wiki/2.-Coroutine-Service
 
 ## Penggunaan - Async Service (Callback)
 
@@ -79,7 +79,7 @@ Lebih lengkapnya bisa Anda baca di Wiki : https://github.com/inibukanadit/raja-a
       })
 ```
 
-Lebih lengkapnya bisa Anda baca di Wiki : https://github.com/inibukanadit/raja-api/wiki/3.-Async-Service-(Callback)
+Lebih lengkapnya bisa Anda baca di Wiki : https://github.com/addeeandra/androidlib-raja-api/wiki/3.-Async-Service-(Callback)
 
 ## Kontribusi
 Silakan laporkan jika ada bugs. Jika ada fitur yang ingin ditambahkan, silakan buat _issue_ baru atau lakukan _pull request_. :)
